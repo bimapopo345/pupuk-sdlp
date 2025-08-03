@@ -1,120 +1,319 @@
-const http = require("http");
-const url = require("url");
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const {
+  RawData,
+  CalibratedData,
+  Recommendation,
+} = require("./models/DataModel");
 
-// Mock data untuk simulasi
-let mockData = {
-  variables: {
-    pH: 6.8,
-    suhu: 28,
-    kelembaban: 65,
-    N: 45,
-    P: 20,
-    K: 35,
-    EC: 1.2,
-  },
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Connect to MongoDB
+mongoose
+  .connect(
+    "mongodb+srv://bimapopo81:Bima1234@sinau.q23pt.mongodb.net/pupuk-sdlp"
+  )
+  .then(() => {
+    console.log("MongoDB connected to pupuk-sdlp database");
+  })
+  .catch((err) => console.log("MongoDB connection error:", err));
+
+// Helper function to get WIB time
+const getWIBTime = () => {
+  const now = new Date();
+  const offset = 7 * 60; // WIB is UTC+7
+  const wibTime = new Date(now.getTime() + offset * 60000);
+  return wibTime.toISOString();
 };
 
-let mockHistory = [
-  {
-    timestamp: new Date().toISOString(),
-    variables: {
-      pH: 6.8,
-      suhu: 28,
-      kelembaban: 65,
-      N: 45,
-      P: 20,
-      K: 35,
-      EC: 1.2,
-    },
-  },
-  {
-    timestamp: new Date(Date.now() - 3600000).toISOString(),
-    variables: {
-      pH: 6.9,
-      suhu: 27,
-      kelembaban: 63,
-      N: 44,
-      P: 21,
-      K: 34,
-      EC: 1.1,
-    },
-  },
-];
+// API Routes
 
-const server = http.createServer((req, res) => {
-  // Enable CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") {
-    res.writeHead(200);
-    res.end();
-    return;
-  }
-
-  const parsedUrl = url.parse(req.url, true);
-  const pathname = parsedUrl.pathname;
-
-  // Helper function to send JSON response
-  const sendJson = (data, statusCode = 200) => {
-    res.writeHead(statusCode, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(data));
-  };
-
-  // API Routes
-  if (pathname === "/api/data/raw") {
-    sendJson(mockData);
-  } else if (pathname === "/api/data/calibrated") {
-    // Simulasi data terkalibrasi
-    const calibrated = {
-      variables: {
-        pH: (mockData.variables.pH * 0.95).toFixed(2),
-        suhu: (mockData.variables.suhu * 1.02).toFixed(2),
-        kelembaban: (mockData.variables.kelembaban * 0.98).toFixed(2),
-        N: (mockData.variables.N * 1.05).toFixed(2),
-        P: (mockData.variables.P * 1.03).toFixed(2),
-        K: (mockData.variables.K * 1.04).toFixed(2),
-        EC: (mockData.variables.EC * 0.97).toFixed(2),
-      },
+// Raw Data Endpoints
+app.post("/api/data/raw", async (req, res) => {
+  try {
+    const dataWithTimestamp = {
+      ...req.body,
+      timestamp: getWIBTime(),
     };
-    sendJson(calibrated);
-  } else if (pathname === "/api/recommendation") {
-    if (req.method === "POST") {
-      let body = "";
-      req.on("data", (chunk) => {
-        body += chunk.toString();
-      });
-      req.on("end", () => {
-        try {
-          const { pH, N, K } = JSON.parse(body);
-
-          // Simulasi rekomendasi berdasarkan input
-          const recommendation = {
-            recommendation: {
-              urea: Math.round(100 - pH * 5 + N / 2),
-              sp36: Math.round(pH * 10 + P * 2),
-              kcl: Math.round(pH * 8 + K * 1.5),
-            },
-            timestamp: new Date().toISOString(),
-          };
-
-          sendJson(recommendation);
-        } catch (error) {
-          sendJson({ error: "Invalid request body" }, 400);
-        }
-      });
-    } else {
-      sendJson({ error: "Method not allowed" }, 405);
-    }
-  } else if (pathname === "/api/history") {
-    sendJson(mockHistory);
-  } else {
-    sendJson({ error: "Not found" }, 404);
+    const rawData = new RawData(dataWithTimestamp);
+    await rawData.save();
+    res.status(201).json({
+      success: true,
+      message: "Raw data saved successfully",
+      data: rawData,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Error saving raw data",
+      error: error.message,
+    });
   }
 });
 
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
+app.get("/api/data/raw", async (req, res) => {
+  try {
+    const rawData = await RawData.findOne().sort({ timestamp: -1 });
+    if (!rawData) {
+      return res.status(404).json({
+        success: false,
+        message: "No raw data found",
+      });
+    }
+    res.json({
+      success: true,
+      data: rawData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching raw data",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/data/raw/history", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const rawData = await RawData.find().sort({ timestamp: -1 }).limit(limit);
+    res.json({
+      success: true,
+      data: rawData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching raw data history",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/data/raw/:id", async (req, res) => {
+  try {
+    const rawData = await RawData.findByIdAndDelete(req.params.id);
+    if (!rawData) {
+      return res.status(404).json({
+        success: false,
+        message: "Raw data not found",
+      });
+    }
+    res.json({
+      success: true,
+      message: "Raw data deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting raw data",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/data/raw", async (req, res) => {
+  try {
+    await RawData.deleteMany({});
+    res.json({
+      success: true,
+      message: "All raw data deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting all raw data",
+      error: error.message,
+    });
+  }
+});
+
+// Calibrated Data Endpoints
+app.post("/api/data/calibrated", async (req, res) => {
+  try {
+    const dataWithTimestamp = {
+      ...req.body,
+      timestamp: getWIBTime(),
+    };
+    const calibratedData = new CalibratedData(dataWithTimestamp);
+    await calibratedData.save();
+    res.status(201).json({
+      success: true,
+      message: "Calibrated data saved successfully",
+      data: calibratedData,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Error saving calibrated data",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/data/calibrated", async (req, res) => {
+  try {
+    const calibratedData = await CalibratedData.findOne().sort({
+      timestamp: -1,
+    });
+    if (!calibratedData) {
+      return res.status(404).json({
+        success: false,
+        message: "No calibrated data found",
+      });
+    }
+    res.json({
+      success: true,
+      data: calibratedData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching calibrated data",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/data/calibrated/history", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const calibratedData = await CalibratedData.find()
+      .sort({ timestamp: -1 })
+      .limit(limit);
+    res.json({
+      success: true,
+      data: calibratedData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching calibrated data history",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/data/calibrated/:id", async (req, res) => {
+  try {
+    const calibratedData = await CalibratedData.findByIdAndDelete(
+      req.params.id
+    );
+    if (!calibratedData) {
+      return res.status(404).json({
+        success: false,
+        message: "Calibrated data not found",
+      });
+    }
+    res.json({
+      success: true,
+      message: "Calibrated data deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting calibrated data",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/data/calibrated", async (req, res) => {
+  try {
+    await CalibratedData.deleteMany({});
+    res.json({
+      success: true,
+      message: "All calibrated data deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error deleting all calibrated data",
+      error: error.message,
+    });
+  }
+});
+
+// Recommendation Endpoints
+app.post("/api/recommendation", async (req, res) => {
+  try {
+    const { pH, N, K } = req.body;
+
+    // Dummy recommendation logic
+    const recommendation = {
+      urea: Math.max(
+        0,
+        Math.min(200, 150 - parseFloat(pH) * 10 + parseFloat(N) * 2)
+      ),
+      sp36: Math.max(
+        0,
+        Math.min(150, 100 - parseFloat(pH) * 5 + parseFloat(K) * 1.5)
+      ),
+      kcl: Math.max(
+        0,
+        Math.min(100, 80 - parseFloat(pH) * 3 + parseFloat(N) * 1.2)
+      ),
+    };
+
+    const recommendationData = new Recommendation({
+      input: { pH, N, K },
+      recommendation,
+      timestamp: getWIBTime(),
+    });
+
+    await recommendationData.save();
+
+    res.json({
+      success: true,
+      message: "Recommendation generated successfully",
+      data: {
+        recommendation,
+        timestamp: recommendationData.timestamp,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Error generating recommendation",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/recommendation/history", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+    const recommendations = await Recommendation.find()
+      .sort({ timestamp: -1 })
+      .limit(limit);
+    res.json({
+      success: true,
+      data: recommendations,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching recommendation history",
+      error: error.message,
+    });
+  }
+});
+
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "API is running",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -1,0 +1,378 @@
+{
+  "info": {
+    "name": "Pupuk SDL API",
+    "description": "API Collection for Pupuk SDL - Soil Monitoring System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3001"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Raw Data",
+      "item": [
+        {
+          "name": "Get Latest Raw Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/raw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "raw"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Raw Data History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/raw/history?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "raw", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records to return"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Raw Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variables\": {\n    \"pH\": 6.8,\n    \"suhu\": 28,\n    \"kelembaban\": 65,\n    \"N\": 45,\n    \"P\": 20,\n    \"K\": 35,\n    \"EC\": 1.2\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data/raw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "raw"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Raw Data by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/raw/64f1a2b3c4d5e6f7g8h9i0j1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "raw", "64f1a2b3c4d5e6f7g8h9i0j1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete All Raw Data",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/raw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "raw"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Calibrated Data",
+      "item": [
+        {
+          "name": "Get Latest Calibrated Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/calibrated",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "calibrated"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Calibrated Data History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/calibrated/history?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "calibrated", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records to return"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Calibrated Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variables\": {\n    \"pH\": 6.8,\n    \"suhu\": 28,\n    \"kelembaban\": 65,\n    \"N\": 45,\n    \"P\": 20,\n    \"K\": 35,\n    \"EC\": 1.2\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data/calibrated",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "calibrated"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Calibrated Data by ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/calibrated/64f1a2b3c4d5e6f7g8h9i0j1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "calibrated", "64f1a2b3c4d5e6f7g8h9i0j1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete All Calibrated Data",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/data/calibrated",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "calibrated"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Recommendation",
+      "item": [
+        {
+          "name": "Get Recommendation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pH\": 6.8,\n  \"N\": 45,\n  \"K\": 35\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recommendation",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recommendation"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Recommendation History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/recommendation/history?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recommendation", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records to return"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Scripts",
+      "item": [
+        {
+          "name": "Test Save Raw Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variables\": {\n    \"pH\": 6.8,\n    \"suhu\": 28,\n    \"kelembaban\": 65,\n    \"N\": 45,\n    \"P\": 20,\n    \"K\": 35,\n    \"EC\": 1.2\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data/raw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "raw"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success property\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has data property\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('variables');",
+                  "    pm.expect(jsonData.data.variables).to.have.all.keys('pH', 'suhu', 'kelembaban', 'N', 'P', 'K', 'EC');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Test Get Recommendation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pH\": 6.8,\n  \"N\": 45,\n  \"K\": 35\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recommendation",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recommendation"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has success property\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success', true);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has recommendation data\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.have.property('recommendation');",
+                  "    pm.expect(jsonData.data.recommendation).to.have.all.keys('urea', 'sp36', 'kcl');",
+                  "});",
+                  "",
+                  "pm.test(\"Recommendation values are valid\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const rec = jsonData.data.recommendation;",
+                  "    pm.expect(rec.urea).to.be.a('number').and.to.be.within(0, 200);",
+                  "    pm.expect(rec.sp36).to.be.a('number').and.to.be.within(0, 150);",
+                  "    pm.expect(rec.kcl).to.be.a('number').and.to.be.within(0, 100);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ]
+}
