@@ -27,8 +27,7 @@ mongoose
 // Helper function to get WIB time
 const getWIBTime = () => {
   const now = new Date();
-  const offset = 7 * 60; // WIB is UTC+7
-  const wibTime = new Date(now.getTime() + offset * 60000);
+  const wibTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
   return wibTime.toISOString();
 };
 
