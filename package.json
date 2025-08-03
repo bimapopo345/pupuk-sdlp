@@ -1,0 +1,19 @@
+{
+  "name": "pupuk-project",
+  "version": "1.0.0",
+  "description": "Main project runner for Pupuk App",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm start\" \"cd frontend && npx vite\"",
+    "build": "cd frontend && npm run build",
+    "start": "concurrently \"cd backend && npm start\" \"cd frontend && npx vite preview\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "concurrently": "^8.2.2"
+  }
+}
