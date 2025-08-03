@@ -1,8 +1,25 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import Dashboard from "./pages/Dashboard";
+import RawData from "./pages/RawData";
+import CalibratedData from "./pages/CalibratedData";
+import Recommendation from "./pages/Recommendation";
+
 function App() {
   return (
-    <div className="bg-white min-h-screen flex items-center justify-center">
-      <h1 className="text-red-500 text-3xl font-bold">Test Tailwind CSS</h1>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/raw-data" element={<RawData />} />
+            <Route path="/calibrated-data" element={<CalibratedData />} />
+            <Route path="/recommendation" element={<Recommendation />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 
