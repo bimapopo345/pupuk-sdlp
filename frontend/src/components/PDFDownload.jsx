@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const PDFDocument = ({ data, type = "raw" }) => {
+const PDFDocument = ({ data, history = [], type = "raw" }) => {
   const timestamp = new Date().toLocaleString("id-ID");
 
   return (
@@ -142,28 +142,30 @@ const PDFDocument = ({ data, type = "raw" }) => {
 
         {/* Data Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Sensor</Text>
+          <Text style={styles.sectionTitle}>Data Sensor Terbaru</Text>
           <View style={styles.dataGrid}>
-            {Object.entries(data.variables).map(([key, value]) => (
-              <View key={key} style={styles.dataItem}>
-                <Text style={styles.dataLabel}>{key.toUpperCase()}</Text>
-                <Text style={styles.dataValue}>
-                  {value}
-                  {key === "pH"
-                    ? ""
-                    : key === "suhu"
-                    ? " °C"
-                    : key === "kelembaban"
-                    ? " %"
-                    : ""}
-                </Text>
-              </View>
-            ))}
+            {data &&
+              data.variables &&
+              Object.entries(data.variables).map(([key, value]) => (
+                <View key={key} style={styles.dataItem}>
+                  <Text style={styles.dataLabel}>{key.toUpperCase()}</Text>
+                  <Text style={styles.dataValue}>
+                    {value}
+                    {key === "pH"
+                      ? ""
+                      : key === "suhu"
+                      ? " °C"
+                      : key === "kelembaban"
+                      ? " %"
+                      : ""}
+                  </Text>
+                </View>
+              ))}
           </View>
         </View>
 
         {/* Recommendation Section */}
-        {data.recommendation && (
+        {data && data.recommendation && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Rekomendasi Pupuk NPK</Text>
             <View style={styles.recommendationGrid}>
@@ -185,6 +187,103 @@ const PDFDocument = ({ data, type = "raw" }) => {
                   {data.recommendation.kcl} g/m²
                 </Text>
               </View>
+            </View>
+          </View>
+        )}
+
+        {/* History Section - only if history data is provided and not empty */}
+        {history && history.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Riwayat Data (5 Terbaru)</Text>
+            {/* Simple table for history */}
+            <View
+              style={{
+                borderWidth: 1,
+                borderColor: "#22c55e",
+                marginBottom: 10,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#f0f9f0",
+                  borderBottomColor: "#22c55e",
+                  borderBottomWidth: 1,
+                }}
+              >
+                <Text
+                  style={{
+                    width: "30%",
+                    padding: 5,
+                    fontSize: 10,
+                    fontFamily: "Roboto-Bold",
+                    color: "#166534",
+                    borderRightColor: "#22c55e",
+                    borderRightWidth: 1,
+                  }}
+                >
+                  Waktu
+                </Text>
+                <Text
+                  style={{
+                    width: "70%",
+                    padding: 5,
+                    fontSize: 10,
+                    fontFamily: "Roboto-Bold",
+                    color: "#166534",
+                    borderRightColor: "#22c55e",
+                    borderRightWidth: 1,
+                  }}
+                >
+                  Data Sensor (pH, Suhu, Kelembaban)
+                </Text>
+              </View>
+              {history.slice(0, 5).map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: "row",
+                    borderBottomColor: "#22c55e",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "30%",
+                      padding: 5,
+                      fontSize: 8,
+                      fontFamily: "Roboto",
+                      color: "#6b7280",
+                      borderRightColor: "#22c55e",
+                      borderRightWidth: 1,
+                    }}
+                  >
+                    {new Date(item.timestamp).toLocaleString("id-ID", {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                  <Text
+                    style={{
+                      width: "70%",
+                      padding: 5,
+                      fontSize: 8,
+                      fontFamily: "Roboto",
+                      color: "#6b7280",
+                      borderRightColor: "#22c55e",
+                      borderRightWidth: 1,
+                    }}
+                  >
+                    {item.variables
+                      ? `pH: ${item.variables.pH || "N/A"}, Suhu: ${
+                          item.variables.suhu || "N/A"
+                        }°C, Kelembaban: ${item.variables.kelembaban || "N/A"}%`
+                      : "N/A"}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
         )}

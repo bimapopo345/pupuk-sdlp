@@ -21,7 +21,7 @@ import {
   deleteAllCalibratedData,
 } from "../services/api";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import PDFDocument from "../components/PDFDownload";
+import SimplePDF from "../components/SimplePDF";
 
 const CalibratedData = () => {
   const [data, setData] = useState(null);
@@ -201,16 +201,16 @@ const CalibratedData = () => {
               </div>
               <PDFDownloadLink
                 document={
-                  <PDFDocument
+                  <SimplePDF
                     data={data}
-                    history={history}
+                    history={history.slice(0, 5)}
                     type="calibrated"
                   />
                 }
                 fileName={`data-terkalibrasi-${
                   new Date().toISOString().split("T")[0]
                 }.pdf`}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all duration-300 flex items-center"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center shadow-md"
               >
                 {({ loading }) => (
                   <span className="flex items-center">
@@ -234,7 +234,7 @@ const CalibratedData = () => {
               </div>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all duration-300 flex items-center"
+                className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center shadow-md"
               >
                 <FaSyncAlt className="mr-2" />
                 Refresh

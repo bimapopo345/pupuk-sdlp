@@ -20,7 +20,7 @@ import {
   deleteAllRawData,
 } from "../services/api";
 import { PDFDownloadLink } from "@react-pdf/renderer";
-import PDFDocument from "../components/PDFDownload";
+import SimplePDF from "../components/SimplePDF";
 
 const RawData = () => {
   const [data, setData] = useState(null);
@@ -199,12 +199,16 @@ const RawData = () => {
               </div>
               <PDFDownloadLink
                 document={
-                  <PDFDocument data={data} history={history} type="raw" />
+                  <SimplePDF
+                    data={data}
+                    history={history.slice(0, 5)}
+                    type="raw"
+                  />
                 }
                 fileName={`data-mentah-${
                   new Date().toISOString().split("T")[0]
                 }.pdf`}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all duration-300 flex items-center"
+                className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center shadow-md"
               >
                 {({ loading }) => (
                   <span className="flex items-center">
@@ -228,7 +232,7 @@ const RawData = () => {
               </div>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all duration-300 flex items-center"
+                className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center shadow-md"
               >
                 <FaTrashAlt className="mr-2" />
                 Hapus
