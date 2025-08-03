@@ -27,31 +27,63 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto",
   },
   header: {
-    marginBottom: 20,
-    borderBottom: 2,
-    borderBottomColor: "#22c55e",
-    paddingBottom: 10,
+    marginBottom: 30,
+    padding: 20,
+    backgroundColor: "#f0fdf4", // Light green background
+    borderRadius: 8,
+    border: 1,
+    borderColor: "#bbf7d0", // Light green border
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
+    position: "relative", // For pseudo-elements if needed
   },
-  title: {
-    fontSize: 24,
+  headerTitle: {
+    fontSize: 28,
     fontFamily: "Roboto-Bold",
-    color: "#166534",
+    color: "#166534", // Dark green
     textAlign: "center",
-    flex: 1,
+    marginBottom: 5,
+    letterSpacing: 0.5,
   },
-  subtitle: {
+  headerSubtitle: {
+    fontSize: 14,
+    fontFamily: "Roboto",
+    color: "#4b5563", // Gray-600
+    textAlign: "center",
+    marginBottom: 8,
+    fontStyle: "italic",
+  },
+  headerTimestamp: {
     fontSize: 12,
     fontFamily: "Roboto",
-    color: "#6b7280",
+    color: "#6b7280", // Gray-500
     textAlign: "center",
-    marginTop: 5,
+    backgroundColor: "#e5e7eb", // Light gray
+    padding: "4px 12px",
+    borderRadius: 12,
+    border: "1px solid #d1d5db", // Gray-300
+    marginTop: 10,
   },
   logo: {
-    width: 50,
-    height: 50,
-    marginRight: 15,
+    width: 70,
+    height: 70,
+    marginBottom: 12,
+    border: 2,
+    borderColor: "#22c55e", // Green-500
+    borderRadius: "50%",
+    padding: "5px", // Creates a white ring around the logo
+    backgroundColor: "#ffffff", // White background for the ring
+  },
+  headerDecoration: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 6,
+    background: "linear-gradient(to right, #22c55e, #16a34a, #15803d)", // Green gradient
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
   },
   section: {
     marginBottom: 25,
@@ -102,10 +134,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
   },
   footer: {
-    marginTop: 30,
+    marginTop: 40,
+    padding: 15,
+    borderTop: 1,
+    borderTopColor: "#22c55e",
     textAlign: "center",
     fontSize: 10,
     color: "#6b7280",
+  },
+  footerText: {
+    marginBottom: 3,
   },
 });
 
@@ -131,18 +169,19 @@ const SimplePDF = ({ data, history = [], type = "raw" }) => {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
+          <View style={styles.headerDecoration} />
           <Image
             style={styles.logo}
             src="https://cdn-icons-png.flaticon.com/512/2986/2986954.png"
           />
-          <Text style={styles.title}>Sistem Pupuk SDL</Text>
+          <Text style={styles.headerTitle}>SISTEM PUPUK SDL</Text>
+          <Text style={styles.headerSubtitle}>
+            {type === "raw"
+              ? "Data Pembacaan Sensor Mentah"
+              : "Data Pembacaan Sensor Terkalibrasi"}
+          </Text>
+          <Text style={styles.headerTimestamp}>Dibuat pada: {timestamp}</Text>
         </View>
-        <Text style={styles.subtitle}>
-          {type === "raw"
-            ? "Data Pembacaan Sensor Mentah"
-            : "Data Pembacaan Sensor Terkalibrasi"}
-        </Text>
-        <Text style={styles.subtitle}>Dibuat pada: {timestamp}</Text>
 
         {/* Current Data Section */}
         {data && data.variables && (
@@ -219,10 +258,13 @@ const SimplePDF = ({ data, history = [], type = "raw" }) => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text>
+          <Text style={styles.footerText}>
             Data dihasilkan oleh Sistem Pupuk SDL dengan Machine Learning
           </Text>
-          <Text>Sumber: Sensor ESP32 + Model ML</Text>
+          <Text style={styles.footerText}>Sumber: Sensor ESP32 + Model ML</Text>
+          <Text style={styles.footerText}>
+            © 2025 Sistem Pupuk SDL. All rights reserved.
+          </Text>
         </View>
       </Page>
     </Document>

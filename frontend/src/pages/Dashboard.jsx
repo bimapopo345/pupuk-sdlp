@@ -129,14 +129,29 @@ const Dashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-10 text-center"
         >
-          <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-            Dashboard Pupuk SDL
-          </h1>
-          <p className="text-center text-gray-600">
-            Monitoring & Rekomendasi Pupuk NPK dengan Machine Learning
+          <div className="inline-block relative mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full blur-lg opacity-75"></div>
+            <h1 className="text-5xl md:text-6xl font-extrabold text-white relative inline-block px-8 py-4 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-2xl">
+              Dashboard Pupuk SDL
+            </h1>
+          </div>
+          <p className="text-xl text-gray-700 font-medium max-w-2xl mx-auto">
+            Sistem Pintar untuk Monitoring Tanaman & Rekomendasi Pupuk NPK
+            Berbasis Machine Learning
           </p>
+          <div className="mt-4 flex justify-center space-x-2">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              <FaLeaf className="mr-1" /> Real-time
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              <FaRobot className="mr-1" /> AI-Powered
+            </span>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+              <FaChartLine className="mr-1" /> Akurat
+            </span>
+          </div>
         </motion.div>
 
         {/* Quick Stats */}
@@ -151,8 +166,8 @@ const Dashboard = () => {
                 <p className="text-green-100 text-sm">Status Sistem</p>
                 <p className="text-2xl font-bold">Aktif</p>
               </div>
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <FaHome className="text-white text-xl" />
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <FaHome className="text-white text-xl drop-shadow-md" />
               </div>
             </div>
           </motion.div>
@@ -168,8 +183,8 @@ const Dashboard = () => {
                 <p className="text-blue-100 text-sm">Data ESP</p>
                 <p className="text-2xl font-bold">7 Variabel</p>
               </div>
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <FaDatabase className="text-white text-xl" />
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <FaDatabase className="text-white text-xl drop-shadow-md" />
               </div>
             </div>
           </motion.div>
@@ -185,8 +200,8 @@ const Dashboard = () => {
                 <p className="text-purple-100 text-sm">ML Status</p>
                 <p className="text-2xl font-bold">Terlatih</p>
               </div>
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <FaRobot className="text-white text-xl" />
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <FaRobot className="text-white text-xl drop-shadow-md" />
               </div>
             </div>
           </motion.div>
@@ -202,8 +217,8 @@ const Dashboard = () => {
                 <p className="text-orange-100 text-sm">Rekomendasi</p>
                 <p className="text-2xl font-bold">Ready</p>
               </div>
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <FaChartPie className="text-white text-xl" />
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center">
+                <FaChartPie className="text-white text-xl drop-shadow-md" />
               </div>
             </div>
           </motion.div>
