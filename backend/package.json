@@ -10,7 +10,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "mongoose": "^8.17.0"
+  },
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
