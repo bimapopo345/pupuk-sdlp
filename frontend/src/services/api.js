@@ -172,3 +172,14 @@ export const getHealth = async () => {
     return null;
   }
 };
+
+export const getLatestCalibrated = async () => {
+  try {
+    const response = await fetch(`${API_URL}/latest/calibrated`);
+    const result = await response.json();
+    return result.success ? result.data : null;
+  } catch (error) {
+    console.error("Error fetching latest calibrated data:", error);
+    return null;
+  }
+};

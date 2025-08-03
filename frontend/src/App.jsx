@@ -8,9 +8,9 @@ import Recommendation from "./pages/Recommendation";
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <Header />
-        <main>
+        <main className="pt-16">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/raw-data" element={<RawData />} />

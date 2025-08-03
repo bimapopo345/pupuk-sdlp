@@ -313,6 +313,33 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Get latest calibrated data for auto-populate
+app.get("/api/latest/calibrated", async (req, res) => {
+  try {
+    const latestData = await CalibratedData.findOne().sort({ timestamp: -1 });
+    if (!latestData) {
+      return res.status(404).json({
+        success: false,
+        message: "No calibrated data found",
+      });
+    }
+    res.json({
+      success: true,
+      data: {
+        pH: latestData.variables.pH,
+        N: latestData.variables.N,
+        K: latestData.variables.K,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching latest calibrated data",
+      error: error.message,
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
