@@ -183,3 +183,129 @@ export const getLatestCalibrated = async () => {
     return null;
   }
 };
+
+export const getDataBasedRecommendation = async () => {
+  try {
+    // Get latest calibrated data
+    const calibratedResponse = await fetch(`${API_URL}/latest/calibrated`);
+    const calibratedResult = await calibratedResponse.json();
+
+    // Get latest manual data
+    const manualResponse = await fetch(`${API_URL}/data/manual`);
+    const manualResult = await manualResponse.json();
+
+    let latestData = null;
+    let source = "";
+
+    // Determine which data is more recent
+    if (calibratedResult.success && manualResult.success) {
+      const calibratedTime = new Date(calibratedResult.data.timestamp);
+      const manualTime = new Date(manualResult.data.timestamp);
+
+      if (calibratedTime > manualTime) {
+        latestData = calibratedResult.data;
+        source = "Sensor ESP32";
+      } else {
+        latestData = manualResult.data;
+        source = "Input Manual";
+      }
+    } else if (calibratedResult.success) {
+      latestData = calibratedResult.data;
+      source = "Sensor ESP32";
+    } else if (manualResult.success) {
+      latestData = manualResult.data;
+      source = "Input Manual";
+    } else {
+      return {
+        success: false,
+        message: "Tidak ada data yang tersedia untuk rekomendasi",
+      };
+    }
+
+    // Generate recommendation based on the latest data
+    const recommendation = {
+      urea: Math.max(
+        0,
+        Math.min(
+          200,
+          150 - parseFloat(latestData.pH) * 10 + parseFloat(latestData.N) * 2
+        )
+      ),
+      sp36: Math.max(
+        0,
+        Math.min(
+          150,
+          100 - parseFloat(latestData.pH) * 5 + parseFloat(latestData.K) * 1.5
+        )
+      ),
+      kcl: Math.max(
+        0,
+        Math.min(
+          100,
+          80 - parseFloat(latestData.pH) * 3 + parseFloat(latestData.N) * 1.2
+        )
+      ),
+    };
+
+    return {
+      success: true,
+      data: {
+        source,
+        input: latestData,
+        recommendation,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    console.error("Error getting data-based recommendation:", error);
+    return {
+      success: false,
+      message: "Terjadi kesalahan saat mendapatkan rekomendasi",
+    };
+  }
+};
+
+export const getManualData = async () => {
+  try {
+    const response = await fetch(`${API_URL}/data/manual`);
+    const result = await response.json();
+    return result.success ? result.data : null;
+  } catch (error) {
+    console.error("Error fetching manual data:", error);
+    return null;
+  }
+};
+
+export const saveManualData = async (data) => {
+  try {
+    const response = await fetch(`${API_URL}/data/manual`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    return result.success ? result.data : null;
+  } catch (error) {
+    console.error("Error saving manual data:", error);
+    return null;
+  }
+};
+
+export const saveAiRecommendation = async (data) => {
+  try {
+    const response = await fetch(`${API_URL}/recommendation/ai`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    return result.success ? result.data : null;
+  } catch (error) {
+    console.error("Error saving AI recommendation:", error);
+    return null;
+  }
+};

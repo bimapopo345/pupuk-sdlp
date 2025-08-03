@@ -329,12 +329,87 @@ app.get("/api/latest/calibrated", async (req, res) => {
         pH: latestData.variables.pH,
         N: latestData.variables.N,
         K: latestData.variables.K,
+        timestamp: latestData.timestamp,
       },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error fetching latest calibrated data",
+      error: error.message,
+    });
+  }
+});
+
+// Manual Data Endpoints
+app.post("/api/data/manual", async (req, res) => {
+  try {
+    const dataWithTimestamp = {
+      ...req.body,
+      timestamp: getWIBTime(),
+    };
+    const manualData = new CalibratedData(dataWithTimestamp);
+    await manualData.save();
+    res.status(201).json({
+      success: true,
+      message: "Manual data saved successfully",
+      data: manualData,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Error saving manual data",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/data/manual", async (req, res) => {
+  try {
+    const manualData = await CalibratedData.findOne({
+      variables: { $exists: true },
+    }).sort({ timestamp: -1 });
+    if (!manualData) {
+      return res.status(404).json({
+        success: false,
+        message: "No manual data found",
+      });
+    }
+    res.json({
+      success: true,
+      data: {
+        pH: manualData.variables.pH,
+        N: manualData.variables.N,
+        K: manualData.variables.K,
+        timestamp: manualData.timestamp,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching manual data",
+      error: error.message,
+    });
+  }
+});
+
+// AI Recommendation Endpoint
+app.post("/api/recommendation/ai", async (req, res) => {
+  try {
+    const aiRecommendation = new Recommendation({
+      ...req.body,
+      timestamp: getWIBTime(),
+    });
+    await aiRecommendation.save();
+    res.status(201).json({
+      success: true,
+      message: "AI recommendation saved successfully",
+      data: aiRecommendation,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Error saving AI recommendation",
       error: error.message,
     });
   }

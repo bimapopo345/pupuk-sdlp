@@ -11,6 +11,7 @@ import {
   FaBolt,
   FaFlask,
   FaCalculator,
+  FaDatabase,
   FaBars,
   FaTimes,
 } from "react-icons/fa";
@@ -36,6 +37,7 @@ const Header = () => {
       label: "Data Terkalibrasi",
       icon: <FaThermometerHalf />,
     },
+    { path: "/data", label: "Data", icon: <FaDatabase /> },
     { path: "/recommendation", label: "Rekomendasi", icon: <FaCalculator /> },
   ];
 

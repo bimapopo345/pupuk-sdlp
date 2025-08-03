@@ -137,8 +137,54 @@ const RecommendationSchema = new mongoose.Schema({
   },
 });
 
+const ManualDataSchema = new mongoose.Schema({
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  },
+  type: {
+    type: String,
+    enum: ["text", "file"],
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  fileName: {
+    type: String,
+    default: null,
+  },
+  fileType: {
+    type: String,
+    default: null,
+  },
+  extractedData: {
+    pH: {
+      type: Number,
+      min: 0,
+      max: 14,
+    },
+    N: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
+    K: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
+  },
+  aiAnalysis: {
+    type: String,
+    default: null,
+  },
+});
+
 module.exports = {
   RawData: mongoose.model("RawData", RawDataSchema),
   CalibratedData: mongoose.model("CalibratedData", CalibratedDataSchema),
   Recommendation: mongoose.model("Recommendation", RecommendationSchema),
+  ManualData: mongoose.model("ManualData", ManualDataSchema),
 };
