@@ -78,9 +78,11 @@ const CalibratedData = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             Grafik Perbandingan
           </h2>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="h-96">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <Chart data={rawData} title="Data Mentah" />
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <Chart data={calibratedData} title="Data Terkalibrasi" />
             </div>
           </div>
