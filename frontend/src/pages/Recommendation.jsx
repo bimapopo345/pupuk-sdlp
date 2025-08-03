@@ -41,6 +41,8 @@ const Recommendation = () => {
   const [showInfo, setShowInfo] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [showLoadButton, setShowLoadButton] = useState(true);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -78,32 +80,20 @@ const Recommendation = () => {
     }
   };
 
-  const getDataBasedRecommendation = async () => {
+  const loadDataBasedRecommendation = async () => {
     setDataLoading(true);
+    setShowLoadButton(false);
     try {
       const result = await getDataBasedRecommendation();
       setDataRecommendation(result);
+      setInitialLoad(false);
     } catch (error) {
       console.error("Error getting data-based recommendation:", error);
+      setInitialLoad(false);
     } finally {
       setDataLoading(false);
     }
   };
-
-  // Load data-based recommendation on component mount
-  useEffect(() => {
-    const loadDataBasedRecommendation = async () => {
-      try {
-        const result = await getDataBasedRecommendation();
-        setDataRecommendation(result);
-      } catch (error) {
-        console.error("Error getting data-based recommendation:", error);
-      } finally {
-        setDataLoading(false);
-      }
-    };
-    loadDataBasedRecommendation();
-  }, []);
 
   const getStatusColor = (value, type) => {
     const numValue = parseFloat(value);
@@ -457,7 +447,7 @@ const Recommendation = () => {
                         <p className="text-sm font-medium text-gray-700 mb-2">
                           Tips Tambahan dari AI
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 leading-relaxed">
                           {aiRecommendation.data.recommendations.tips}
                         </p>
                       </div>
@@ -512,7 +502,7 @@ const Recommendation = () => {
 
               <div className="flex justify-center">
                 <button
-                  onClick={getDataBasedRecommendation}
+                  onClick={loadDataBasedRecommendation}
                   disabled={dataLoading}
                   className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium py-3 px-8 rounded-xl hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >

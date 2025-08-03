@@ -12,31 +12,28 @@ class AIService {
 
   async getFertilizerRecommendation(pH, N, K, context = "") {
     try {
-      const prompt = `
-        Anda adalah ahli pertanian yang berpengalaman dalam memberikan rekomendasi pupuk NPK.
-        Berdasarkan data tanah berikut:
-        - pH Tanah: ${pH}
-        - Kandungan Nitrogen (N): ${N}
-        - Kandungan Kalium (K): ${K}
-        ${context ? `- Konteks tambahan: ${context}` : ""}
-
-        Berikan rekomendasi pupuk NPK (Urea, SP-36, KCL) dalam satuan gram per meter persegi (g/m²).
-        Jelaskan juga alasan singkat untuk setiap rekomendasi.
-
-        Format respons:
-        1. Urea (N): [jumlah] g/m²
-           Alasan: [penjelasan singkat]
-        2. SP-36 (P): [jumlah] g/m²
-           Alasan: [penjelasan singkat]
-        3. KCL (K): [jumlah] g/m²
-           Alasan: [penjelasan singkat]
-
-        Tips Tambahan: [saran singkat untuk perawatan tanaman]
-
-        Analisis Tambahan: [berikan satu paragraf analisis mendetail tentang kondisi tanah dan rekomendasi]
+      // Split the prompt into smaller chunks
+      const mainPrompt = `
+        Ahli pertanian: Berikan rekomendasi pupuk NPK (Urea, SP-36, KCL) dalam g/m² berdasarkan data:
+        - pH: ${pH}
+        - N: ${N}
+        - K: ${K}
       `;
 
-      const response = await fetch(`${this.baseURL}/chat/completions`, {
+      const formatPrompt = `
+        Format:
+        1. Urea (N): [jumlah] g/m²
+           Alasan: [penjelasan singkat 1-2 baris]
+        2. SP-36 (P): [jumlah] g/m²
+           Alasan: [penjelasan singkat 1-2 baris]
+        3. KCL (K): [jumlah] g/m²
+           Alasan: [penjelasan singkat 1-2 baris]
+
+        Tips: [berikan tips yang lebih detail 2-3 baris tentang perawatan tanaman, pemupukan, dan monitoring tanah]
+      `;
+
+      // First request - get main recommendations
+      const response1 = await fetch(`${this.baseURL}/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,23 +46,65 @@ class AIService {
           messages: [
             {
               role: "user",
-              content: prompt,
+              content: mainPrompt,
             },
           ],
-          max_tokens: 600,
+          max_tokens: 150,
           temperature: 0.3,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`AI API request failed: ${response.status}`);
+      if (!response1.ok) {
+        throw new Error(`AI API request failed: ${response1.status}`);
       }
 
-      const data = await response.json();
-      const aiResponse = data.choices[0].message.content;
+      const data1 = await response1.json();
+      let mainResponse = data1.choices[0].message.content;
+
+      // Limit main response to prevent too long responses
+      if (mainResponse.length > 200) {
+        mainResponse = mainResponse.substring(0, 200) + "...";
+      }
+
+      // Second request - get formatted response
+      const response2 = await fetch(`${this.baseURL}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+          "HTTP-Referer": "https://pupuk-sdlp.vercel.app",
+          "X-Title": "Pupuk SDL",
+        },
+        body: JSON.stringify({
+          model: this.model,
+          messages: [
+            {
+              role: "user",
+              content: formatPrompt,
+            },
+          ],
+          max_tokens: 100,
+          temperature: 0.3,
+        }),
+      });
+
+      if (!response2.ok) {
+        throw new Error(`AI API request failed: ${response2.status}`);
+      }
+
+      const data2 = await response2.json();
+      let formatResponse = data2.choices[0].message.content;
+
+      // Limit format response to prevent too long responses
+      if (formatResponse.length > 150) {
+        formatResponse = formatResponse.substring(0, 150) + "...";
+      }
+
+      // Combine responses
+      const combinedResponse = mainResponse + "\n\n" + formatResponse;
 
       // Parse AI response to extract recommendations
-      const recommendations = this.parseAIResponse(aiResponse);
+      const recommendations = this.parseAIResponse(combinedResponse);
 
       // Ensure we have valid recommendations
       if (
@@ -91,7 +130,7 @@ class AIService {
       return {
         success: true,
         data: {
-          aiResponse,
+          aiResponse: combinedResponse,
           recommendations,
           timestamp: new Date().toISOString(),
         },
